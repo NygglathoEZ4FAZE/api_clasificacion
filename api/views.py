@@ -1,0 +1,19 @@
+from django.http import JsonResponse
+from django.views import View
+from .utils import cargar_modelos
+
+class ClasificarConsulta(View):
+    modelo_cargado, pipeline_cargado, encoder_cargado = cargar_modelos()
+
+    def post(self, request, *args, **kwargs):
+        consulta = request.POST.get("consulta")
+
+        if not consulta:
+            return JsonResponse({"error": "Consulta no proporcionada."}, status=400)
+
+        try:
+            prediccion_codificada = self.modelo_cargado.predict([consulta])
+            prediccion = self.encoder_cargado.inverse_transform(prediccion_codificada)
+            return JsonResponse({"prediccion": prediccion[0]}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
