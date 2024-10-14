@@ -1,7 +1,10 @@
 from django.http import JsonResponse
 from django.views import View
 from .utils import cargar_modelos
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ClasificarConsulta(View):
     modelo_cargado, pipeline_cargado, encoder_cargado = cargar_modelos()
 
